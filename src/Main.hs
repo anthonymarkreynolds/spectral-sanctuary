@@ -9,14 +9,15 @@ import Control.Monad.State
 clearConsole :: IO ExitCode
 clearConsole = system "clear"
 
-welcomeMessage :: String
-welcomeMessage = "Welcome to Spectral Sanctuary"
+welcomeMessage :: Message
+welcomeMessage = Info "Welcome to Spectral Sanctuary"
 
-invalidInputMessage :: String
-invalidInputMessage = "Invalid input, try again."
+invalidInputMessage :: Message
+invalidInputMessage = Alert "Invalid input, try again."
 
--- data Message = Info | Alert
-data GameState = GameState {message :: Maybe String}
+data Message = Info String | Alert String | Plain String deriving (Show)
+
+newtype GameState = GameState {message :: Maybe Message}
 
 type MenuLoop = Menu -> StateT GameState IO ()
 
@@ -35,11 +36,14 @@ helpMenu = Menu "Help"
   [ MenuItem "Main Menu" (Just mainMenu) 
   , MenuItem "Quit" Nothing]
 
-printMessage :: Maybe String -> IO ()
-printMessage (Just message) = putStrLn message
+printMessage :: Maybe Message -> IO ()
+printMessage (Just message) = case message of
+  Info  str -> putStrLn $ "🛈 " ++ str
+  Alert str -> putStrLn $ "⚠ " ++ str
+  Plain str -> putStrLn str
 printMessage Nothing = return ()
 
-printMenu :: Menu -> Maybe String -> IO ()
+printMenu :: Menu -> Maybe Message -> IO ()
 printMenu (Menu {menuName = menuName, items = items}) message = do
   _ <- clearConsole
   printMessage message

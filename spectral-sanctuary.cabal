@@ -22,7 +22,9 @@ executable spectral-sanctuary
                        mtl,
                        process,
                        containers,
-                       HUnit
+                       HUnit,
+                       fgl,
+                       algebraic-graphs
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
